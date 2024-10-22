@@ -1,8 +1,8 @@
-import { experienciasofDB } from "../modelos/types_d_experiencias";
+import { experienciasInterface, experienciasofDB } from "../modelos/types_d_experiencias";
 
 export const getEntries = {
     getAll: async()=>{
-    return await experienciasofDB.find();
+    return await experienciasofDB.find().populate('owner').populate('participants');
     },
     findById: async(id:string)=>{
         return await experienciasofDB.findById(id);
@@ -22,6 +22,9 @@ export const getEntries = {
     update: async(id:string,body:object)=>{
         console.log(body);
         return await experienciasofDB.findByIdAndUpdate(id,body,{$new:true});
+    },
+    findByOwnerandUpdate: async(id:string,body:object): Promise<experienciasInterface | null>=>{
+        return await experienciasofDB.findOneAndUpdate({owner:id},body).exec();
     },
     delete: async(id:string)=>{
         return await experienciasofDB.findByIdAndDelete(id);
