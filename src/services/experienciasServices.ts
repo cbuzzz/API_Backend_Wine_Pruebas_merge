@@ -28,5 +28,8 @@ export const getEntries = {
     },
     delete: async(id:string)=>{
         return await experienciasofDB.findByIdAndDelete(id);
+    },
+    findByOwnerandDelete: async(id:string): Promise<experienciasInterface | null>=>{
+        return await experienciasofDB.findOneAndDelete({owner:id}).exec();
     }
 }

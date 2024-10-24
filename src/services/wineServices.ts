@@ -19,5 +19,8 @@ export const getEntries = {
     },
     delete: async(id:string): Promise<wineInterface | null>=>{
         return await wineofDB.findByIdAndDelete(id);
+    },
+    findByOwnerandDelete: async(id:string): Promise<wineInterface | null>=>{
+        return await wineofDB.findOneAndDelete({owner:id}).exec();
     }
 }

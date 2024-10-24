@@ -58,7 +58,9 @@ export async function updateUser(req:Request,res:Response):Promise<Response> {
 
 export async function deleteUser(req:Request,res:Response):Promise<Response> {
     try{
-        const user:usersInterface|null = await userServices.getEntries.delete(req.params.id)
+        const user:usersInterface|null = await userServices.getEntries.delete(req.params.id);
+        await experienciasServices.getEntries.findByOwnerandDelete(req.params.id);
+        await wineServices.getEntries.findByOwnerandDelete(req.params.id);
         return res.json(user);
     } catch(e){
         return res.status(500).json({ e: 'Failed to delete user' });
