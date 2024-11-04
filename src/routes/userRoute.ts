@@ -1,25 +1,43 @@
-import express from 'express'
-import { createUser, deleteUser, findAllUsers, findUser, logIn, toggleHabilitacion, updateUser } from '../controllers/userControllers'
+import express from 'express';
+import {
+  createUser,
+  deleteUser,
+  findAllUsers,
+  findUser,
+  logIn,
+  toggleHabilitacion,
+  updateUser,
+} from '../controllers/userControllers';
+import authJWT from '../middlewares/authJWT'; // Importa la clase
 
-//import toNewUser from '../extras/utils'
+const auth = new authJWT(); // Crea una instancia de la clase para usar las funciones de authJWT.ts
+const router = express.Router();
 
-const router = express.Router()
-
+// Ruta para crear un nuevo usuario
 router.route('/')
-    .post(createUser)
+  .post(createUser);
 
+// Ruta para obtener, actualizar o eliminar usuario por ID
 router.route('/:id')
-    .get(findUser)
-    .put(updateUser)
-    .delete(deleteUser)
+  .get(auth.verifyToken, findUser) // Validación de Token para obtener usuario
+  .put(auth.verifyToken, updateUser) // Validación de Token para actualizar usuario
+  .delete(auth.verifyToken, auth.isAdmin, deleteUser); // Validación de Token y Admin para eliminar usuario
 
+// Ruta para obtener todos los usuarios
 router.route('/all')
-    .post(findAllUsers)
+  .post(auth.verifyToken, auth.isAdmin, findAllUsers); // Validación de Token y Admin para obtener todos los usuarios
 
+// Ruta para iniciar sesión
 router.route('/logIn')
-    .post(logIn)
+  .post(logIn);
 
+// Ruta para alternar habilitación por ID
 router.route('/:id/habilitacion')
-  .patch(toggleHabilitacion)
-    
-export default router
+  .patch(auth.verifyToken, toggleHabilitacion); // Validación de Token para alternar habilitación
+
+// Ruta para ver el perfil del usuario con validación de Token y propiedad de perfil
+router.get('/:id/profile', auth.verifyToken, auth.verifyOwnership, (req, res) => {
+  // Lógica para devolver el perfil del usuario
+});
+
+export default router;

@@ -1,12 +1,14 @@
-import { model, Schema } from "mongoose";
+import mongoose, { Schema, model } from 'mongoose';
 
 export interface usersInterface{
+    _id?: mongoose.Types.ObjectId;
     name: string,
     mail: string,
     password: string,
     comment: string,
     tipo: string,
     habilitado: boolean;
+    role: string;
 }
 export type UsersInterfacePublicInfo = Pick<usersInterface,  'name' | 'comment'>
 export type UsersInterfacePrivateInfo = Pick<usersInterface, 'name' | 'password'>
@@ -18,7 +20,8 @@ export const usersSchema = new Schema<usersInterface>({
     password: String,
     comment: String,
     tipo: String,
-    habilitado: Boolean
+    habilitado: Boolean,
+    role: String
 })
 
 export const usersofDB = model<usersInterface>('user',usersSchema)
