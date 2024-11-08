@@ -29,15 +29,12 @@ router.route('/all')
 
 // Ruta para iniciar sesión
 router.route('/logIn')
-  .post(logIn);
+  .post(logIn); // No se necesita verificación de token aquí
 
 // Ruta para alternar habilitación por ID
 router.route('/:id/habilitacion')
   .patch(auth.verifyToken, toggleHabilitacion); // Validación de Token para alternar habilitación
 
-// Ruta para ver el perfil del usuario con validación de Token y propiedad de perfil
-router.get('/:id/profile', auth.verifyToken, auth.verifyOwnership, (req, res) => {
-  // Lógica para devolver el perfil del usuario
-});
+// ...existing code...
 
 export default router;

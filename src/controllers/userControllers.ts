@@ -1,7 +1,8 @@
-import { pageInterface } from '../modelos/type_d_extras'
-import { usersInterface, UsersInterfacePrivateInfo } from '../modelos/types_d_users'
-import * as userServices from '../services/userServices'
-import { Request, Response } from 'express'
+import { pageInterface } from '../modelos/type_d_extras';
+import { usersInterface, usersofDB } from '../modelos/types_d_users';
+import * as userServices from '../services/userServices';
+import { Request, Response } from 'express';
+import * as jwt from 'jsonwebtoken';
 
 export async function findAllUsers(req:Request,res:Response):Promise<Response> {
     try{
@@ -22,19 +23,42 @@ export async function findUser(req:Request,res:Response):Promise<Response> {
     }
 }
 
-export async function logIn(req:Request,res:Response):Promise<Response> {
-    try{
-        const { name,password } = req.body as UsersInterfacePrivateInfo;
-        const user:usersInterface|null = await userServices.getEntries.findIdAndPassword(name, password);
-        if (user!=null){
-            return res.json(user);
-        } else {
-            return res.status(400).json({message:'User or password incorrect'})
+export const logIn = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { email, password } = req.body;
+        const user = await usersofDB.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
-    } catch(e){
-        return res.status(500).json({ e: 'Failed to find user' });
+
+        const passwordIsValid = user.password === password; // Aquí deberías usar bcrypt para comparar las contraseñas
+
+        if (!passwordIsValid) {
+            return res.status(401).json({ message: "Invalid Password" });
+        }
+
+        const token = jwt.sign({ id: user._id }, 'winer+jwt', {
+            expiresIn: 86400 // 24 hours
+        });
+
+        const isAdmin = user.role === "admin";
+
+        return res.status(200).json({
+            id: user._id,
+            email: user.mail,
+            role: user.role,
+            accessToken: token,
+            isAdmin: isAdmin
+        });
+    } catch (error) {
+        if (error instanceof Error) {
+            return res.status(500).json({ message: error.message });
+        } else {
+            return res.status(500).json({ message: 'An unknown error occurred' });
+        }
     }
-}
+};
 
 export async function createUser(req:Request,res:Response):Promise<Response> {
     try{
