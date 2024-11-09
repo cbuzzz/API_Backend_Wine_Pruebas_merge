@@ -2,13 +2,13 @@ import { experienciasInterface, experienciasofDB } from "../modelos/types_d_expe
 
 export const getEntries = {
     getAll: async()=>{
-    return await experienciasofDB.find().populate('owner').populate('participants');
+    return await experienciasofDB.find();
     },
     findById: async(id:string)=>{
         return await experienciasofDB.findById(id);
     },
     findUserById: async(id:string)=>{
-        return await experienciasofDB.findById(id).populate('owner').populate('participants');
+        return await experienciasofDB.findById(id);
     },
     addParticipant: async(idExp:string,idPart:string)=>{
         return await experienciasofDB.findByIdAndUpdate(idExp,{$addToSet:{participants:idPart}});

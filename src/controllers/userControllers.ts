@@ -77,10 +77,10 @@ export async function toggleHabilitacion(req: Request, res: Response): Promise<R
 
         // Actualizar el campo habilitado del usuario
         const user = await userServices.getEntries.update(req.params.id, { habilitado });
-        await experienciasServices.getEntries.findByOwnerandUpdate(req.params.id, { habilitado });
-        await wineServices.getEntries.findByOwnerandUpdate(req.params.id, { habilitado });
 
         if (user) {
+            await experienciasServices.getEntries.findByOwnerandUpdate(user?.name, { habilitado });
+            await wineServices.getEntries.findByOwnerandUpdate(user?.name, { habilitado });
             return res.status(200).json(user);
         } else {
             return res.status(404).json({ message: 'Usuario no encontrado' });
