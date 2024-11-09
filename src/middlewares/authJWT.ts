@@ -10,10 +10,11 @@ declare module 'express-serve-static-core' {
     }
 }
 export class authJWT {
-    private _SECRET: string = 'winer+jwt';
 
     public async verifyToken(req: Request, res: Response, next: NextFunction) {
         try {
+            const _SECRET: string = 'winer+jwt';
+
             console.log("verifyToken");
 
             const token = req.header("winer-access-token");
@@ -24,7 +25,7 @@ export class authJWT {
             }
             console.log("token provided");
             try {
-                const decoded = jwt.verify(token, this._SECRET) as IJwtPayload;
+                const decoded = jwt.verify(token, _SECRET) as IJwtPayload;
                 console.log("Verified correctly");
                 req.id = decoded.id.toString();
                 console.log(req.id);

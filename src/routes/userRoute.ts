@@ -5,7 +5,6 @@ import {
   findAllUsers,
   findUser,
   logIn,
-  toggleHabilitacion,
   updateUser,
 } from '../controllers/userControllers';
 import authJWT from '../middlewares/authJWT'; // Importa la clase
@@ -19,8 +18,8 @@ router.route('/')
 
 // Ruta para obtener, actualizar o eliminar usuario por ID
 router.route('/:id')
-  .get(auth.verifyToken, findUser) // Validación de Token para obtener usuario
-  .put(auth.verifyToken, updateUser) // Validación de Token para actualizar usuario
+  .get(auth.verifyToken,auth.isAdmin, findUser) // Validación de Token para obtener usuario
+  .put(auth.verifyToken,auth.isAdmin, updateUser) // Validación de Token para actualizar usuario
   .delete(auth.verifyToken, auth.isAdmin, deleteUser); // Validación de Token y Admin para eliminar usuario
 
 // Ruta para obtener todos los usuarios
@@ -31,10 +30,5 @@ router.route('/all')
 router.route('/logIn')
   .post(logIn); // No se necesita verificación de token aquí
 
-// Ruta para alternar habilitación por ID
-router.route('/:id/habilitacion')
-  .patch(auth.verifyToken, toggleHabilitacion); // Validación de Token para alternar habilitación
-
-// ...existing code...
 
 export default router;

@@ -26,10 +26,11 @@ export const getEntries = {
     create: async(entry:object): Promise<usersInterface>=>{
         return await usersofDB.create(entry);
     },
-    update: async(id:string,body:object): Promise<usersInterface | null>=>{
-        console.log(body);
-        return await usersofDB.findByIdAndUpdate(id,body,{$new:true});
+    update: async (id: string, body: object): Promise<usersInterface | null> => {
+        console.log("Update Body:", body); // Muestra el contenido de body para verificar qué datos se están pasando
+        return await usersofDB.findByIdAndUpdate(id, body, { new: true, runValidators: true });
     },
+    
     delete: async(id:string): Promise<usersInterface | null>=>{
         return await usersofDB.findByIdAndDelete(id);
     }
