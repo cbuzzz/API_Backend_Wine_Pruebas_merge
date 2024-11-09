@@ -73,3 +73,24 @@ export async function delParticipantToExperiencias(req:Request,res:Response):Pro
         return res.status(500).json({ e: 'Failed to del participant' });
     }
 }
+
+export async function toggleHabilitacionExperiencias(req: Request, res: Response): Promise<Response> {
+    try {
+        const { habilitado } = req.body;  // Obtener el nuevo estado de habilitación del cuerpo de la petición
+        
+        if (typeof habilitado !== 'boolean') {
+            return res.status(400).json({ message: 'El campo habilitado debe ser un valor booleano' });
+        }
+
+        // Actualizar el campo habilitado del usuario
+        const experiencia = await experienciasServices.getEntries.update(req.params.id, { habilitado });
+
+        if (experiencia) {
+            return res.status(200).json(experiencia);
+        } else {
+            return res.status(404).json({ message: 'Experiencia no encontrado' });
+        }
+    } catch (e) {
+        return res.status(500).json({ e: 'Failed to update user habilitation' });
+    }
+}

@@ -1,6 +1,8 @@
 import { pageInterface } from '../modelos/type_d_extras'
 import { usersInterface, UsersInterfacePrivateInfo } from '../modelos/types_d_users'
 import * as userServices from '../services/userServices'
+import * as experienciasServices from '../services/experienciasServices'
+import * as wineServices from '../services/wineServices'
 import { Request, Response } from 'express'
 
 export async function findAllUsers(req:Request,res:Response):Promise<Response> {
@@ -56,7 +58,9 @@ export async function updateUser(req:Request,res:Response):Promise<Response> {
 
 export async function deleteUser(req:Request,res:Response):Promise<Response> {
     try{
-        const user:usersInterface|null = await userServices.getEntries.delete(req.params.id)
+        const user:usersInterface|null = await userServices.getEntries.delete(req.params.id);
+        await experienciasServices.getEntries.findByOwnerandDelete(req.params.id);
+        await wineServices.getEntries.findByOwnerandDelete(req.params.id);
         return res.json(user);
     } catch(e){
         return res.status(500).json({ e: 'Failed to delete user' });
@@ -73,6 +77,8 @@ export async function toggleHabilitacion(req: Request, res: Response): Promise<R
 
         // Actualizar el campo habilitado del usuario
         const user = await userServices.getEntries.update(req.params.id, { habilitado });
+        await experienciasServices.getEntries.findByOwnerandUpdate(req.params.id, { habilitado });
+        await wineServices.getEntries.findByOwnerandUpdate(req.params.id, { habilitado });
 
         if (user) {
             return res.status(200).json(user);
