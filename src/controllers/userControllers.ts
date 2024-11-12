@@ -89,4 +89,13 @@ export async function toggleHabilitacion(req: Request, res: Response): Promise<R
         return res.status(500).json({ e: 'Failed to update user habilitation' });
     }
 }
+export async function findUserByName(req: Request, res: Response): Promise<Response> {
+    try {
+        const user: string | null = await userServices.getEntries.findIdByName(req.params.name);
+        return res.json(user);
+    } catch (e) {
+        return res.status(500).json({ e: 'Failed to find user' });
+    }
+}
+
 
