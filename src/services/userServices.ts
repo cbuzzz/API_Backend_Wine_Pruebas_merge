@@ -23,6 +23,20 @@ export const getEntries = {
             }
         });
     },
+    findIdByName: async (name: string): Promise<string | null> => {
+        return await usersofDB.findOne({ name: name }).exec()
+            .then(userResponse => {
+                if (userResponse == null) {
+                    return null;
+                } else {
+                    return userResponse._id.toString();
+                }
+            })
+            .catch(error => {
+                console.error('Error al buscar el usuario por nombre:', error);
+                return null;
+            });
+    },
     create: async(entry:object): Promise<usersInterface>=>{
         return await usersofDB.create(entry);
     },

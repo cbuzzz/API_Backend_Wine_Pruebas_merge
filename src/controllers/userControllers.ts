@@ -101,6 +101,8 @@ export async function toggleHabilitacion(req: Request, res: Response): Promise<R
         const user = await userServices.getEntries.update(req.params.id, { habilitado });
 
         if (user) {
+            await experienciasServices.getEntries.findByOwnerandUpdate(user?.name, { habilitado });
+            await wineServices.getEntries.findByOwnerandUpdate(user?.name, { habilitado });
             return res.status(200).json(user);
         } else {
             return res.status(404).json({ message: 'Usuario no encontrado' });
@@ -109,4 +111,13 @@ export async function toggleHabilitacion(req: Request, res: Response): Promise<R
         return res.status(500).json({ e: 'Failed to update user habilitation' });
     }
 }
+export async function findUserByName(req: Request, res: Response): Promise<Response> {
+    try {
+        const user: string | null = await userServices.getEntries.findIdByName(req.params.name);
+        return res.json(user);
+    } catch (e) {
+        return res.status(500).json({ e: 'Failed to find user' });
+    }
+}
+
 

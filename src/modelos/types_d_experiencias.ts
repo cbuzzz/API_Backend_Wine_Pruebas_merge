@@ -1,16 +1,16 @@
-import { ObjectId, model, Schema } from "mongoose";
+import { model, Schema } from "mongoose";
 
 export interface experienciasInterface{
-    owner: ObjectId,
-    participants: ObjectId[],
+    owner: string,
+    participants: string[],
     description: string,
     tipo: string,
     habilitado: boolean
 }
 
 export const experienciasSchema = new Schema<experienciasInterface>({
-    owner: {type: Schema.Types.ObjectId, ref:'user'},
-    participants: [{type: Schema.Types.ObjectId, ref:'user'}],
+    owner: String,
+    participants: [String],
     description: String,
     tipo: String,
     habilitado: Boolean

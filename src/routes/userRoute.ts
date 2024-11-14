@@ -1,18 +1,13 @@
-import express from 'express';
-import {
-  createUser,
-  deleteUser,
-  findAllUsers,
-  findUser,
-  logIn,
-  updateUser,
-} from '../controllers/userControllers';
+import express from 'express'
+import { createUser, deleteUser, findAllUsers, findUser, logIn, toggleHabilitacion, updateUser } from '../controllers/userControllers'
+//import toNewUser from '../extras/utils'
 import authJWT from '../middlewares/authJWT'; // Importa la clase
 
 const auth = new authJWT(); // Crea una instancia de la clase para usar las funciones de authJWT.ts
-const router = express.Router();
 
-// Ruta para crear un nuevo usuario
+
+const router = express.Router()
+
 router.route('/')
   .post(createUser);
 
@@ -31,4 +26,7 @@ router.route('/logIn')
   .post(logIn); // No se necesita verificación de token aquí
 
 
-export default router;
+router.route('/:id/habilitacion')
+  .patch(toggleHabilitacion)
+    
+export default router
