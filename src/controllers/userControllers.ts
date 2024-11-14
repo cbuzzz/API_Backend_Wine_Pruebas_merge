@@ -1,8 +1,6 @@
 import { pageInterface } from '../modelos/type_d_extras'
 import { usersInterface, UsersInterfacePrivateInfo } from '../modelos/types_d_users'
 import * as userServices from '../services/userServices'
-import * as experienciasServices from '../services/experienciasServices'
-import * as wineServices from '../services/wineServices'
 import { Request, Response } from 'express'
 
 export async function findAllUsers(req:Request,res:Response):Promise<Response> {
@@ -24,19 +22,43 @@ export async function findUser(req:Request,res:Response):Promise<Response> {
     }
 }
 
-export async function logIn(req:Request,res:Response):Promise<Response> {
-    try{
-        const { name,password } = req.body as UsersInterfacePrivateInfo;
-        const user:usersInterface|null = await userServices.getEntries.findIdAndPassword(name, password);
-        if (user!=null){
-            return res.json(user);
-        } else {
-            return res.status(400).json({message:'User or password incorrect'})
+export const logIn = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { mail, password } = req.body;
+        const user = await usersofDB.findOne({ mail });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
-    } catch(e){
-        return res.status(500).json({ e: 'Failed to find user' });
+        console.log(user);
+        console.log(password);
+        const passwordIsValid = user.password === password; // Aquí deberías usar bcrypt para comparar las contraseñas
+
+        if (!passwordIsValid) {
+            return res.status(401).json({ message: "Invalid Password" });
+        }
+
+        const token = jwt.sign({ id: user._id }, 'winer+jwt', {
+            expiresIn: 86400 // 24 hours
+        });
+
+        const isAdmin = user.role === "admin";
+
+        return res.status(200).json({
+            id: user._id,
+            mail: user.mail,
+            role: user.role,
+            accessToken: token,
+            isAdmin: isAdmin
+        });
+    } catch (error) {
+        if (error instanceof Error) {
+            return res.status(500).json({ message: error.message });
+        } else {
+            return res.status(500).json({ message: 'An unknown error occurred' });
+        }
     }
-}
+};
 
 export async function createUser(req:Request,res:Response):Promise<Response> {
     try{
@@ -77,8 +99,6 @@ export async function toggleHabilitacion(req: Request, res: Response): Promise<R
 
         // Actualizar el campo habilitado del usuario
         const user = await userServices.getEntries.update(req.params.id, { habilitado });
-        await experienciasServices.getEntries.findByOwnerandUpdate(req.params.id, { habilitado });
-        await wineServices.getEntries.findByOwnerandUpdate(req.params.id, { habilitado });
 
         if (user) {
             return res.status(200).json(user);
